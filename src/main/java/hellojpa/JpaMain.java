@@ -9,25 +9,43 @@ import java.util.List;
 public class JpaMain {
     public static void main(String[] args) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
-        EntityManager entityManager = emf.createEntityManager();
+        EntityManager em = emf.createEntityManager();
 
-        EntityTransaction tx = entityManager.getTransaction();
+        EntityTransaction tx = em.getTransaction();
         tx.begin();
         //code
         try {
-            List<Member> result = entityManager.createQuery("select m from Member as m", Member.class)
-                    .setFirstResult(5)
-                    .setMaxResults(8)
-                    .getResultList();
-            for (Member member1 : result) {
-                System.out.println("member = " + member1.getName());
-            }
+            Member member = new Member();
+            member.setUsername("member1");
+            Member member2 = new Member();
+            member.setUsername("member2");
+
+            em.persist(member);
+            em.flush();
+            em.clear();
+
+
+
+            Member reference = em.getReference(Member.class, member.getId());
+            System.out.println("reference = " + reference);
+            System.out.println("reference.getId() = " + reference.getId());
+            System.out.println("reference.getUsername() = " + reference.getUsername());
+
+
             tx.commit();
         }catch (Exception e){
             tx.rollback();
         }finally {
-            entityManager.close();
+            em.close();
             emf.close();
         }
+    }
+
+    private static void printAndTeam(Member member) {
+        String username = member.getUsername();
+        System.out.println("username = " + username);
+
+        Team team = member.getTeam();
+        System.out.println("team = " + team.getName());
     }
 }
