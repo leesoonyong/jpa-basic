@@ -1,9 +1,8 @@
 package hellojpa;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
+import org.hibernate.Hibernate;
+
+import javax.persistence.*;
 import java.util.List;
 
 public class JpaMain {
@@ -15,25 +14,27 @@ public class JpaMain {
         tx.begin();
         //code
         try {
-            Member member = new Member();
-            member.setUsername("member1");
-            Member member2 = new Member();
-            member.setUsername("member2");
 
-            em.persist(member);
+            Child child1 = new Child();
+            Child child2 = new Child();
+
+            Parent parent = new Parent();
+            parent.addChild(child1);
+            parent.addChild(child2);
+
+            em.persist(parent);
+            em.persist(child1);
+            em.persist(child2);
             em.flush();
             em.clear();
 
+            Parent findParent = em.find(Parent.class, parent.getId());
 
-
-            Member reference = em.getReference(Member.class, member.getId());
-            System.out.println("reference = " + reference);
-            System.out.println("reference.getId() = " + reference.getId());
-            System.out.println("reference.getUsername() = " + reference.getUsername());
-
+            em.remove(findParent);
 
             tx.commit();
         }catch (Exception e){
+            e.printStackTrace();
             tx.rollback();
         }finally {
             em.close();
