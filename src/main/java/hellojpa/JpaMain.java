@@ -14,23 +14,13 @@ public class JpaMain {
         tx.begin();
         //code
         try {
+            Member member = new Member();
 
-            Child child1 = new Child();
-            Child child2 = new Child();
+            member.setUsername("MEMBER1");
+            member.setAddress(new Address("seoul", "1001", "11-22"));
+            member.setPeriod(new Period());
 
-            Parent parent = new Parent();
-            parent.addChild(child1);
-            parent.addChild(child2);
-
-            em.persist(parent);
-            em.persist(child1);
-            em.persist(child2);
-            em.flush();
-            em.clear();
-
-            Parent findParent = em.find(Parent.class, parent.getId());
-
-            em.remove(findParent);
+            em.persist(member);
 
             tx.commit();
         }catch (Exception e){
